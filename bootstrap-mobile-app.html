@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce Mobile App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-bottom: 80px;
+        }
+        
+        .mobile-container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .top-bar {
+            background: #e53e3e;
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 5px;
+            color: #666;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            color: #e53e3e;
+        }
+        
+        .product-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .product-img {
+            width: 100%;
+            height: 150px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #dee2e6;
+        }
+        
+        .category-chip {
+            display: inline-block;
+            background: #e53e3e;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 5px 5px 5px 0;
+            text-decoration: none;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .screen {
+            display: none;
+            padding: 20px;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .btn-primary {
+            background-color: #e53e3e;
+            border-color: #e53e3e;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c53030;
+            border-color: #c53030;
+        }
+        
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-processing { background-color: #cff4fc; color: #055160; }
+        .status-shipped { background-color: #d1ecf1; color: #0c5460; }
+        .status-delivered { background-color: #d4edda; color: #155724; }
+        
+        .form-control.is-valid {
+            border-color: #198754;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='m2.3 6.73.94-.94 1.83 1.83L7.23 5.45 8.17 6.4l-3.17 3.17-2.67-2.67Z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 4.6 4.6m0-4.6-4.6 4.6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .toast-notification {
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-text {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+
+        .is-invalid ~ .form-text {
+            color: #dc3545;
+        }
+
+        .is-valid ~ .form-text {
+            color: #198754;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0" id="screenTitle">Welcome to Ecommerce</h5>
+                <div class="position-relative">
+                    <i class="bi bi-cart3 fs-5" onclick="showScreen('cart')"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active">
+            <div class="text-center mb-4">
+                <i class="bi bi-shop fs-1 text-primary"></i>
+                <h3 class="mt-3">Welcome Back!</h3>
+                <p class="text-muted">Sign in to your account</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="loginEmail" value="john@example.com" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="loginPassword" value="password123" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3">Sign In</button>
+                <div class="text-center">
+                    <small><a href="#" onclick="showScreen('register')">Don't have an account? Sign up</a></small><br>
+                    <small><a href="#" onclick="showScreen('forgot')">Forgot Password?</a></small>
+                </div>
+            </form>
+            
+            <div class="mt-4">
+                <h6>Demo Accounts:</h6>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-body p-2">
+                                <small class="fw-bold">Customer</small><br>
+                                <small>john@example.com</small><br>
+                                <small>password123</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-body p-2">
+                                <small class="fw-bold">Admin</small><br>
+                                <small>admin@example.com</small><br>
+                                <small>admin123</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Screen -->
+        <div id="registerScreen" class="screen">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus fs-1 text-primary"></i>
+                <h3 class="mt-3">Create Account</h3>
+                <p class="text-muted">Join our community</p>
+            </div>
+            
+            <form id="registerForm">
+                <div class="mb-3">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                    <div class="form-text">Enter your first and last name</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                    <div class="form-text">We'll never share your email with anyone</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password *</label>
+                    <input type="password" name="password" class="form-control" placeholder="Create a password" required>
+                    <div class="form-text">Minimum 6 characters</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password *</label>
+                    <input type="password" name="confirmPassword" class="form-control" placeholder="Confirm your password" required>
+                    <div class="form-text">Must match the password above</div>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                    <label class="form-check-label" for="agreeTerms">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3">Create Account</button>
+                <div class="text-center">
+                    <small><a href="#" onclick="showScreen('login')">Already have an account? Sign in</a></small>
+                </div>
+            </form>
+        </div>
+
+        <!-- Forgot Password Screen -->
+        <div id="forgotScreen" class="screen">
+            <div class="text-center mb-4">
+                <i class="bi bi-key fs-1 text-primary"></i>
+                <h3 class="mt-3">Reset Password</h3>
+                <p class="text-muted">Enter your email to reset password</p>
+            </div>
+            
+            <form id="forgotForm">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mb-3">Send Reset Link</button>
+                <div class="text-center">
+                    <small><a href="#" onclick="showScreen('login')">Back to Sign In</a></small>
+                </div>
+            </form>
+        </div>
+
+        <!-- Home Screen -->
+        <div id="homeScreen" class="screen">
+            <!-- Search Bar -->
+            <div class="mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search products..." id="searchInput">
+                    <button class="btn btn-outline-secondary" onclick="searchProducts()">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Categories -->
+            <div class="mb-4">
+                <h6>Categories</h6>
+                <div>
+                    <a href="#" class="category-chip" onclick="filterByCategory('all')">All</a>
+                    <a href="#" class="category-chip" onclick="filterByCategory('electronics')">Electronics</a>
+                    <a href="#" class="category-chip" onclick="filterByCategory('clothing')">Clothing</a>
+                    <a href="#" class="category-chip" onclick="filterByCategory('books')">Books</a>
+                    <a href="#" class="category-chip" onclick="filterByCategory('home')">Home</a>
+                    <a href="#" class="category-chip" onclick="filterByCategory('sports')">Sports</a>
+                </div>
+            </div>
+            
+            <!-- Featured Products -->
+            <div class="mb-4">
+                <h6>Featured Products</h6>
+                <div id="featuredProducts"></div>
+            </div>
+        </div>
+
+        <!-- Products Screen -->
+        <div id="productsScreen" class="screen">
+            <!-- Filter Options -->
+            <div class="row mb-3">
+                <div class="col-6">
+                    <select class="form-select form-select-sm" id="sortSelect" onchange="sortProducts()">
+                        <option value="name">Sort by Name</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Rating</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <select class="form-select form-select-sm" id="categoryFilter" onchange="filterProducts()">
+                        <option value="all">All Categories</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="books">Books</option>
+                        <option value="home">Home & Garden</option>
+                        <option value="sports">Sports</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Products List -->
+            <div id="productsList"></div>
+        </div>
+
+        <!-- Product Detail Screen -->
+        <div id="productDetailScreen" class="screen">
+            <div id="productDetail"></div>
+        </div>
+
+        <!-- Cart Screen -->
+        <div id="cartScreen" class="screen">
+            <div id="cartItems"></div>
+            <div id="cartSummary"></div>
+        </div>
+
+        <!-- Checkout Screen -->
+        <div id="checkoutScreen" class="screen">
+            <h5>Checkout</h5>
+            
+            <!-- Shipping Address -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Shipping Address</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="First Name" value="John">
+                        </div>
+                        <div class="col-6 mb-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="Last Name" value="Doe">
+                        </div>
+                    </div>
+                    <input type="text" class="form-control form-control-sm mb-2" placeholder="Address" value="123 Main St">
+                    <div class="row">
+                        <div class="col-6 mb-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="City" value="New York">
+                        </div>
+                        <div class="col-6 mb-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="ZIP" value="10001">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Method -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Payment Method</h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="payment" id="creditCard" checked>
+                        <label class="form-check-label" for="creditCard">
+                            <i class="bi bi-credit-card"></i> Credit Card
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="payment" id="paypal">
+                        <label class="form-check-label" for="paypal">
+                            <i class="bi bi-paypal"></i> PayPal
+                        </label>
+                    </div>
+                    <input type="text" class="form-control form-control-sm mb-2" placeholder="Card Number" value="**** **** **** 1234">
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="text" class="form-control form-control-sm" placeholder="MM/YY" value="12/25">
+                        </div>
+                        <div class="col-6">
+                            <input type="text" class="form-control form-control-sm" placeholder="CVV" value="123">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0">Order Summary</h6>
+                </div>
+                <div class="card-body" id="checkoutSummary">
+                </div>
+            </div>
+            
+            <button class="btn btn-primary w-100" onclick="placeOrder()">Place Order</button>
+        </div>
+
+        <!-- Order History Screen -->
+        <div id="ordersScreen" class="screen">
+            <h5>Order History</h5>
+            <div id="ordersList"></div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profileScreen" class="screen">
+            <div class="text-center mb-4">
+                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <i class="bi bi-person fs-1 text-white"></i>
+                </div>
+                <h5 class="mt-2" id="userName">John Doe</h5>
+                <p class="text-muted" id="userEmail">john@example.com</p>
+                <small class="text-muted" id="userLastLogin">Last login: Never</small>
+            </div>
+            
+            <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item list-group-item-action" onclick="showScreen('editProfile')">
+                    <i class="bi bi-person-gear me-3"></i>Edit Profile
+                </a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="showScreen('changePassword')">
+                    <i class="bi bi-key me-3"></i>Change Password
+                </a>
+                <a href="#" class="list-group-item list-group-item-action" onclick="showScreen('orders')">
+                    <i class="bi bi-box-seam me-3"></i>My Orders
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="bi bi-heart me-3"></i>Wishlist
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="bi bi-geo-alt me-3"></i>Addresses
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="bi bi-credit-card me-3"></i>Payment Methods
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="bi bi-gear me-3"></i>Settings
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <i class="bi bi-question-circle me-3"></i>Help & Support
+                </a>
+                <a href="#" class="list-group-item list-group-item-action text-danger" onclick="confirmLogout()">
+                    <i class="bi bi-box-arrow-right me-3"></i>Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Edit Profile Screen -->
+        <div id="editProfileScreen" class="screen">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-link p-0 me-3" onclick="showScreen('profile')">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </button>
+                <h5 class="mb-0">Edit Profile</h5>
+            </div>
+            
+            <form id="editProfileForm">
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="name" id="editName" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" id="editEmail" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" name="phone" id="editPhone" class="form-control" placeholder="+1234567890">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" id="editAddress" class="form-control" rows="3" placeholder="Enter your address"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+            </form>
+        </div>
+
+        <!-- Change Password Screen -->
+        <div id="changePasswordScreen" class="screen">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-link p-0 me-3" onclick="showScreen('profile')">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </button>
+                <h5 class="mb-0">Change Password</h5>
+            </div>
+            
+            <form id="changePasswordForm">
+                <div class="mb-3">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" name="currentPassword" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">New Password</label>
+                    <input type="password" name="newPassword" class="form-control" required>
+                    <div class="form-text">Minimum 6 characters</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" name="confirmNewPassword" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Change Password</button>
+            </form>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav d-flex">
+            <a href="#" class="nav-item active" onclick="setActiveNav(this); showScreen('home')">
+                <i class="bi bi-house-door d-block"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" onclick="setActiveNav(this); showScreen('products')">
+                <i class="bi bi-grid d-block"></i>
+                <span>Products</span>
+            </a>
+            <a href="#" class="nav-item position-relative" onclick="setActiveNav(this); showScreen('cart')">
+                <i class="bi bi-cart3 d-block"></i>
+                <span>Cart</span>
+            </a>
+            <a href="#" class="nav-item" onclick="setActiveNav(this); showScreen('orders')">
+                <i class="bi bi-box-seam d-block"></i>
+                <span>Orders</span>
+            </a>
+            <a href="#" class="nav-item" onclick="setActiveNav(this); showScreen('profile')">
+                <i class="bi bi-person d-block"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mock Data
+        const products = [
+            {id: 1, name: "iPhone 14 Pro", price: 999, category: "electronics", rating: 4.8, image: "📱", description: "Latest iPhone with Pro features"},
+            {id: 2, name: "MacBook Air M2", price: 1299, category: "electronics", rating: 4.9, image: "💻", description: "Powerful laptop for professionals"},
+            {id: 3, name: "Nike Air Max", price: 129, category: "clothing", rating: 4.5, image: "👟", description: "Comfortable running shoes"},
+            {id: 4, name: "Levi's Jeans", price: 79, category: "clothing", rating: 4.3, image: "👖", description: "Classic denim jeans"},
+            {id: 5, name: "JavaScript Guide", price: 29, category: "books", rating: 4.7, image: "📚", description: "Complete JavaScript programming guide"},
+            {id: 6, name: "Coffee Maker", price: 89, category: "home", rating: 4.4, image: "☕", description: "Automatic coffee brewing machine"},
+            {id: 7, name: "Yoga Mat", price: 39, category: "sports", rating: 4.6, image: "🧘", description: "Premium exercise yoga mat"},
+            {id: 8, name: "Wireless Headphones", price: 199, category: "electronics", rating: 4.5, image: "🎧", description: "High-quality wireless audio"},
+            {id: 9, name: "Cotton T-Shirt", price: 25, category: "clothing", rating: 4.2, image: "👕", description: "Comfortable cotton t-shirt"},
+            {id: 10, name: "Python Cookbook", price: 35, category: "books", rating: 4.8, image: "📖", description: "Advanced Python programming recipes"},
+            {id: 11, name: "Smart Watch", price: 299, category: "electronics", rating: 4.4, image: "⌚", description: "Fitness tracking smartwatch"},
+            {id: 12, name: "Winter Jacket", price: 149, category: "clothing", rating: 4.6, image: "🧥", description: "Warm winter jacket"},
+            {id: 13, name: "Gaming Mouse", price: 69, category: "electronics", rating: 4.3, image: "🖱️", description: "High-precision gaming mouse"},
+            {id: 14, name: "Cooking Pan", price: 45, category: "home", rating: 4.5, image: "🍳", description: "Non-stick cooking pan"},
+            {id: 15, name: "Tennis Racket", price: 89, category: "sports", rating: 4.4, image: "🎾", description: "Professional tennis racket"},
+            {id: 16, name: "Bluetooth Speaker", price: 79, category: "electronics", rating: 4.3, image: "🔊", description: "Portable wireless speaker"},
+            {id: 17, name: "Summer Dress", price: 59, category: "clothing", rating: 4.5, image: "👗", description: "Elegant summer dress"},
+            {id: 18, name: "React Handbook", price: 32, category: "books", rating: 4.7, image: "📘", description: "Complete React development guide"},
+            {id: 19, name: "Table Lamp", price: 55, category: "home", rating: 4.2, image: "💡", description: "Modern LED table lamp"},
+            {id: 20, name: "Running Shoes", price: 119, category: "sports", rating: 4.6, image: "👟", description: "Professional running shoes"}
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let orders = JSON.parse(localStorage.getItem('orders')) || [
+            {id: 1001, date: "2025-11-01", status: "delivered", total: 458, items: 3},
+            {id: 1002, date: "2025-11-05", status: "shipped", total: 129, items: 1},
+            {id: 1003, date: "2025-11-08", status: "processing", total: 298, items: 2},
+            {id: 1004, date: "2025-11-10", status: "pending", total: 89, items: 1}
+        ];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let filteredProducts = [...products];
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentUser) {
+                showScreen('home');
+                updateUserInfo();
+            } else {
+                showScreen('login');
+            }
+            updateCartBadge();
+            loadProducts();
+            loadOrders();
+        });
+
+        // Screen Management
+        function showScreen(screenName) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenName + 'Screen').classList.add('active');
+            
+            const titles = {
+                login: 'Welcome',
+                register: 'Create Account',
+                forgot: 'Reset Password',
+                home: 'Ecommerce Store',
+                products: 'All Products',
+                productDetail: 'Product Details',
+                cart: 'Shopping Cart',
+                checkout: 'Checkout',
+                orders: 'Order History',
+                profile: 'My Profile',
+                editProfile: 'Edit Profile',
+                changePassword: 'Change Password'
+            };
+            
+            document.getElementById('screenTitle').textContent = titles[screenName] || 'Ecommerce';
+            
+            if (screenName === 'products') {
+                loadProducts();
+            } else if (screenName === 'cart') {
+                loadCart();
+            } else if (screenName === 'orders') {
+                loadOrders();
+            } else if (screenName === 'home') {
+                loadFeaturedProducts();
+            }
+        }
+
+        // Navigation
+        function setActiveNav(element) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+
+        // Mock Users Database
+        let users = JSON.parse(localStorage.getItem('users')) || [
+            {
+                id: 1,
+                email: 'john@example.com',
+                password: 'password123',
+                name: 'John Doe',
+                role: 'customer',
+                phone: '+1234567890',
+                address: '123 Main St, New York, NY 10001',
+                registeredDate: '2025-01-15',
+                isActive: true,
+                lastLogin: null
+            },
+            {
+                id: 2,
+                email: 'admin@example.com',
+                password: 'admin123',
+                name: 'Admin User',
+                role: 'admin',
+                phone: '+1987654321',
+                address: '456 Admin Blvd, Admin City, AC 12345',
+                registeredDate: '2025-01-01',
+                isActive: true,
+                lastLogin: null
+            }
+        ];
+
+        // Authentication Functions
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function validatePassword(password) {
+            // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
+            return password.length >= 6; // Simplified for demo
+        }
+
+        function findUserByEmail(email) {
+            return users.find(user => user.email.toLowerCase() === email.toLowerCase());
+        }
+
+        function authenticateUser(email, password) {
+            const user = findUserByEmail(email);
+            if (user && user.password === password && user.isActive) {
+                user.lastLogin = new Date().toISOString();
+                localStorage.setItem('users', JSON.stringify(users));
+                return user;
+            }
+            return null;
+        }
+
+        function registerUser(userData) {
+            // Check if user already exists
+            if (findUserByEmail(userData.email)) {
+                return { success: false, message: 'User with this email already exists!' };
+            }
+
+            // Validate email format
+            if (!validateEmail(userData.email)) {
+                return { success: false, message: 'Please enter a valid email address!' };
+            }
+
+            // Validate password strength
+            if (!validatePassword(userData.password)) {
+                return { success: false, message: 'Password must be at least 6 characters long!' };
+            }
+
+            // Create new user
+            const newUser = {
+                id: users.length + 1,
+                email: userData.email.toLowerCase(),
+                password: userData.password,
+                name: userData.name,
+                role: 'customer',
+                phone: userData.phone || '',
+                address: userData.address || '',
+                registeredDate: new Date().toISOString().split('T')[0],
+                isActive: true,
+                lastLogin: null
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            return { success: true, message: 'Account created successfully!', user: newUser };
+        }
+
+        function resetPassword(email) {
+            const user = findUserByEmail(email);
+            if (!user) {
+                return { success: false, message: 'No account found with this email address!' };
+            }
+
+            // In a real app, this would send an email
+            // For demo, we'll just show a success message
+            return { 
+                success: true, 
+                message: 'Password reset instructions have been sent to your email!',
+                resetToken: 'demo-token-' + Date.now() // Demo token
+            };
+        }
+
+        function updateUserProfile(userId, updateData) {
+            const userIndex = users.findIndex(user => user.id === userId);
+            if (userIndex === -1) {
+                return { success: false, message: 'User not found!' };
+            }
+
+            // Update user data
+            users[userIndex] = { ...users[userIndex], ...updateData };
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Update current user if it's the same user
+            if (currentUser && currentUser.id === userId) {
+                currentUser = users[userIndex];
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUserInfo();
+            }
+
+            return { success: true, message: 'Profile updated successfully!' };
+        }
+
+        function changePassword(userId, currentPassword, newPassword) {
+            const user = users.find(user => user.id === userId);
+            if (!user) {
+                return { success: false, message: 'User not found!' };
+            }
+
+            if (user.password !== currentPassword) {
+                return { success: false, message: 'Current password is incorrect!' };
+            }
+
+            if (!validatePassword(newPassword)) {
+                return { success: false, message: 'New password must be at least 6 characters long!' };
+            }
+
+            user.password = newPassword;
+            localStorage.setItem('users', JSON.stringify(users));
+
+            return { success: true, message: 'Password changed successfully!' };
+        }
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            // Validation
+            if (!email || !password) {
+                showToast('Please fill in all fields!', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address!', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Signing in...';
+            submitBtn.disabled = true;
+
+            // Simulate network delay
+            setTimeout(() => {
+                const user = authenticateUser(email, password);
+                
+                if (user) {
+                    currentUser = {
+                        id: user.id,
+                        email: user.email,
+                        name: user.name,
+                        role: user.role,
+                        phone: user.phone,
+                        address: user.address,
+                        lastLogin: user.lastLogin
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserInfo();
+                    showScreen('home');
+                    showToast(`Welcome back, ${user.name}!`, 'success');
+                    
+                    // Reset form
+                    e.target.reset();
+                    document.getElementById('loginEmail').value = 'john@example.com';
+                    document.getElementById('loginPassword').value = 'password123';
+                } else {
+                    showToast('Invalid email or password!', 'error');
+                }
+                
+                // Restore button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1000);
+        });
+
+        // Registration Form Handler
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const name = formData.get('name') || e.target.querySelector('input[type="text"]').value;
+            const email = formData.get('email') || e.target.querySelector('input[type="email"]').value;
+            const password = formData.get('password') || e.target.querySelectorAll('input[type="password"]')[0].value;
+            const confirmPassword = formData.get('confirmPassword') || e.target.querySelectorAll('input[type="password"]')[1].value;
+            
+            // Validation
+            if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+                showToast('Please fill in all fields!', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match!', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating Account...';
+            submitBtn.disabled = true;
+
+            // Simulate network delay
+            setTimeout(() => {
+                const result = registerUser({
+                    name: name.trim(),
+                    email: email.trim(),
+                    password: password
+                });
+                
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    showScreen('login');
+                    e.target.reset();
+                } else {
+                    showToast(result.message, 'error');
+                }
+                
+                // Restore button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1500);
+        });
+
+        // Forgot Password Form Handler
+        document.getElementById('forgotForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = e.target.querySelector('input[type="email"]').value.trim();
+            
+            // Validation
+            if (!email) {
+                showToast('Please enter your email address!', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address!', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            // Simulate network delay
+            setTimeout(() => {
+                const result = resetPassword(email);
+                
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    showScreen('login');
+                    e.target.reset();
+                } else {
+                    showToast(result.message, 'error');
+                }
+                
+                // Restore button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+
+        // Logout Function
+        function logout() {
+            if (currentUser) {
+                const userName = currentUser.name;
+                
+                // Clear session data
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                
+                // Clear cart if desired (optional)
+                // cart = [];
+                // localStorage.removeItem('cart');
+                // updateCartBadge();
+                
+                // Reset to login screen
+                showScreen('login');
+                showToast(`Goodbye, ${userName}!`, 'success');
+                
+                // Reset login form to demo account
+                document.getElementById('loginEmail').value = 'john@example.com';
+                document.getElementById('loginPassword').value = 'password123';
+            }
+        }
+
+        // Auto-logout after inactivity (30 minutes)
+        let inactivityTimer;
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            if (currentUser) {
+                inactivityTimer = setTimeout(() => {
+                    showToast('Session expired due to inactivity', 'error');
+                    logout();
+                }, 30 * 60 * 1000); // 30 minutes
+            }
+        }
+
+        // Reset timer on user activity
+        document.addEventListener('click', resetInactivityTimer);
+        document.addEventListener('keypress', resetInactivityTimer);
+        document.addEventListener('scroll', resetInactivityTimer);
+
+        function updateUserInfo() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                
+                // Update last login display
+                const lastLoginElement = document.getElementById('userLastLogin');
+                if (lastLoginElement && currentUser.lastLogin) {
+                    const lastLogin = new Date(currentUser.lastLogin);
+                    lastLoginElement.textContent = `Last login: ${lastLogin.toLocaleDateString()} ${lastLogin.toLocaleTimeString()}`;
+                }
+                
+                // Populate edit profile form if it exists
+                const editForm = document.getElementById('editProfileForm');
+                if (editForm) {
+                    document.getElementById('editName').value = currentUser.name || '';
+                    document.getElementById('editEmail').value = currentUser.email || '';
+                    document.getElementById('editPhone').value = currentUser.phone || '';
+                    document.getElementById('editAddress').value = currentUser.address || '';
+                }
+            }
+        }
+
+        // Edit Profile Form Handler
+        document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showToast('Please login first!', 'error');
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const name = formData.get('name').trim();
+            const email = formData.get('email').trim();
+            const phone = formData.get('phone').trim();
+            const address = formData.get('address').trim();
+            
+            // Validation
+            if (!name || !email) {
+                showToast('Name and email are required!', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address!', 'error');
+                return;
+            }
+
+            // Check if email is already taken by another user
+            const existingUser = findUserByEmail(email);
+            if (existingUser && existingUser.id !== currentUser.id) {
+                showToast('This email is already registered by another user!', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Updating...';
+            submitBtn.disabled = true;
+
+            // Simulate network delay
+            setTimeout(() => {
+                const result = updateUserProfile(currentUser.id, {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    address: address
+                });
+                
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    showScreen('profile');
+                } else {
+                    showToast(result.message, 'error');
+                }
+                
+                // Restore button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1000);
+        });
+
+        // Change Password Form Handler
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showToast('Please login first!', 'error');
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            const confirmNewPassword = formData.get('confirmNewPassword');
+            
+            // Validation
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                showToast('Please fill in all password fields!', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                showToast('New passwords do not match!', 'error');
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                showToast('New password must be different from current password!', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Changing...';
+            submitBtn.disabled = true;
+
+            // Simulate network delay
+            setTimeout(() => {
+                const result = changePassword(currentUser.id, currentPassword, newPassword);
+                
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    e.target.reset();
+                    showScreen('profile');
+                } else {
+                    showToast(result.message, 'error');
+                }
+                
+                // Restore button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1000);
+        });
+
+        // Confirm Logout Function
+        function confirmLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                logout();
+            }
+        }
+
+        // Products
+        function loadFeaturedProducts() {
+            const featured = products.slice(0, 6);
+            const container = document.getElementById('featuredProducts');
+            container.innerHTML = featured.map(product => createProductCard(product)).join('');
+        }
+
+        function loadProducts() {
+            const container = document.getElementById('productsList');
+            container.innerHTML = filteredProducts.map(product => createProductCard(product)).join('');
+        }
+
+        function createProductCard(product) {
+            return `
+                <div class="product-card">
+                    <div class="product-img">${product.image}</div>
+                    <div class="p-3">
+                        <h6 class="mb-1">${product.name}</h6>
+                        <p class="text-muted small mb-2">${product.description}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-primary">$${product.price}</span>
+                            <span class="small">
+                                <i class="bi bi-star-fill text-warning"></i> ${product.rating}
+                            </span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm flex-fill" onclick="viewProduct(${product.id})">
+                                View
+                            </button>
+                            <button class="btn btn-primary btn-sm flex-fill" onclick="addToCart(${product.id})">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function viewProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            
+            document.getElementById('productDetail').innerHTML = `
+                <div class="text-center mb-3">
+                    <div class="product-img" style="height: 200px; font-size: 80px;">${product.image}</div>
+                </div>
+                <h4>${product.name}</h4>
+                <p class="text-muted">${product.description}</p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-primary mb-0">$${product.price}</h5>
+                    <span>
+                        <i class="bi bi-star-fill text-warning"></i> ${product.rating} (245 reviews)
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Quantity</label>
+                    <select class="form-select" id="productQuantity">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <h6>Product Details</h6>
+                    <ul class="list-unstyled small">
+                        <li><strong>Category:</strong> ${product.category}</li>
+                        <li><strong>Brand:</strong> Premium Brand</li>
+                        <li><strong>Warranty:</strong> 1 Year</li>
+                        <li><strong>Shipping:</strong> Free shipping</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-4">
+                    <h6>Customer Reviews</h6>
+                    <div class="border rounded p-2 mb-2">
+                        <div class="d-flex justify-content-between">
+                            <small class="fw-bold">Sarah M.</small>
+                            <small class="text-warning">★★★★★</small>
+                        </div>
+                        <small class="text-muted">Great product, exactly as described!</small>
+                    </div>
+                    <div class="border rounded p-2 mb-2">
+                        <div class="d-flex justify-content-between">
+                            <small class="fw-bold">Mike R.</small>
+                            <small class="text-warning">★★★★☆</small>
+                        </div>
+                        <small class="text-muted">Good quality, fast delivery.</small>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary w-100" onclick="addToCartFromDetail(${product.id})">
+                    Add to Cart
+                </button>
+            `;
+            
+            showScreen('productDetail');
+        }
+
+        function addToCartFromDetail(id) {
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+            addToCart(id, quantity);
+        }
+
+        // Search and Filter
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(query) ||
+                product.description.toLowerCase().includes(query)
+            );
+            loadProducts();
+        }
+
+        function filterByCategory(category) {
+            if (category === 'all') {
+                filteredProducts = [...products];
+            } else {
+                filteredProducts = products.filter(product => product.category === category);
+            }
+            loadProducts();
+            showScreen('products');
+        }
+
+        function filterProducts() {
+            const category = document.getElementById('categoryFilter').value;
+            filterByCategory(category);
+        }
+
+        function sortProducts() {
+            const sort = document.getElementById('sortSelect').value;
+            
+            switch(sort) {
+                case 'name':
+                    filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProducts.sort((a, b) => b.rating - a.rating);
+                    break;
+            }
+            
+            loadProducts();
+        }
+
+        // Cart Management
+        function addToCart(id, quantity = 1) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({...product, quantity});
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+            showToast(`${product.name} added to cart!`, 'success');
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+            loadCart();
+            showToast('Item removed from cart!', 'success');
+        }
+
+        function updateQuantity(id, quantity) {
+            const item = cart.find(item => item.id === id);
+            if (item) {
+                item.quantity = parseInt(quantity);
+                if (item.quantity <= 0) {
+                    removeFromCart(id);
+                } else {
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    loadCart();
+                }
+            }
+        }
+
+        function loadCart() {
+            const container = document.getElementById('cartItems');
+            const summaryContainer = document.getElementById('cartSummary');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-cart-x fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Your cart is empty</h5>
+                        <button class="btn btn-primary mt-3" onclick="showScreen('products')">
+                            Start Shopping
+                        </button>
+                    </div>
+                `;
+                summaryContainer.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <div class="text-center" style="font-size: 40px;">${item.image}</div>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="mb-1">${item.name}</h6>
+                                <p class="text-muted small mb-1">$${item.price} each</p>
+                                <div class="input-group input-group-sm" style="width: 100px;">
+                                    <button class="btn btn-outline-secondary" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                                    <input type="number" class="form-control text-center" value="${item.quantity}" 
+                                           onchange="updateQuantity(${item.id}, this.value)" min="1">
+                                    <button class="btn btn-outline-secondary" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                                </div>
+                            </div>
+                            <div class="col-3 text-end">
+                                <div class="fw-bold">$${(item.price * item.quantity).toFixed(2)}</div>
+                                <button class="btn btn-sm btn-outline-danger mt-1" onclick="removeFromCart(${item.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const shipping = subtotal > 50 ? 0 : 10;
+            const total = subtotal + tax + shipping;
+
+            summaryContainer.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h6>Order Summary</h6>
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal:</span>
+                            <span>$${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Tax:</span>
+                            <span>$${tax.toFixed(2)}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Shipping:</span>
+                            <span>${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total:</span>
+                            <span>$${total.toFixed(2)}</span>
+                        </div>
+                        <button class="btn btn-primary w-100 mt-3" onclick="proceedToCheckout()">
+                            Proceed to Checkout
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCartBadge() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartBadge').textContent = totalItems;
+        }
+
+        // Checkout
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!', 'error');
+                return;
+            }
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const shipping = subtotal > 50 ? 0 : 10;
+            const total = subtotal + tax + shipping;
+
+            document.getElementById('checkoutSummary').innerHTML = `
+                <div class="small">
+                    ${cart.map(item => `
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>${item.name} (×${item.quantity})</span>
+                            <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    `).join('')}
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span>Subtotal:</span>
+                        <span>$${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Tax:</span>
+                        <span>$${tax.toFixed(2)}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Shipping:</span>
+                        <span>${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span>$${total.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+            
+            showScreen('checkout');
+        }
+
+        function placeOrder() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!', 'error');
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.08;
+            const shipping = subtotal > 50 ? 0 : 10;
+            const total = subtotal + tax + shipping;
+
+            const newOrder = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                status: 'pending',
+                total: total,
+                items: cart.length,
+                products: [...cart]
+            };
+
+            orders.unshift(newOrder);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            
+            cart = [];
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+            
+            showToast('Order placed successfully!', 'success');
+            showScreen('orders');
+        }
+
+        // Orders
+        function loadOrders() {
+            const container = document.getElementById('ordersList');
+            
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-box-seam fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">No orders yet</h5>
+                        <button class="btn btn-primary mt-3" onclick="showScreen('products')">
+                            Start Shopping
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-1">Order #${order.id}</h6>
+                                <small class="text-muted">${order.date}</small>
+                            </div>
+                            <span class="order-status status-${order.status}">${order.status.toUpperCase()}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>${order.items} item(s)</span>
+                            <span class="fw-bold">$${order.total.toFixed(2)}</span>
+                        </div>
+                        <div class="mt-2">
+                            <button class="btn btn-outline-primary btn-sm me-2" onclick="viewOrderDetails(${order.id})">
+                                View Details
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="reorder(${order.id})">
+                                Reorder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewOrderDetails(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            showToast('Order details: ' + order.items + ' items, Total: $' + order.total.toFixed(2), 'info');
+        }
+
+        function reorder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order && order.products) {
+                order.products.forEach(product => {
+                    addToCart(product.id, product.quantity);
+                });
+                showToast('Items added to cart!', 'success');
+                showScreen('cart');
+            }
+        }
+
+        // Utility Functions
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast-notification').forEach(toast => toast.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} position-fixed toast-notification`;
+            toast.style.cssText = 'top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; max-width: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+            
+            // Add icon based on type
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            toast.innerHTML = `${icon} ${message}`;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(-20px)';
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            }, 10);
+            
+            // Auto remove
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(-20px)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Form Validation Helper
+        function validateForm(form) {
+            let isValid = true;
+            const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Add real-time validation
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input[required], textarea[required], select[required]')) {
+                if (e.target.value.trim()) {
+                    e.target.classList.remove('is-invalid');
+                    e.target.classList.add('is-valid');
+                } else {
+                    e.target.classList.remove('is-valid');
+                    e.target.classList.add('is-invalid');
+                }
+                
+                // Special validation for email
+                if (e.target.type === 'email' && e.target.value.trim()) {
+                    if (validateEmail(e.target.value)) {
+                        e.target.classList.remove('is-invalid');
+                        e.target.classList.add('is-valid');
+                    } else {
+                        e.target.classList.remove('is-valid');
+                        e.target.classList.add('is-invalid');
+                    }
+                }
+                
+                // Special validation for password confirmation
+                if (e.target.name === 'confirmPassword' || e.target.name === 'confirmNewPassword') {
+                    const passwordField = e.target.form.querySelector('input[name="password"], input[name="newPassword"]');
+                    if (passwordField && e.target.value === passwordField.value) {
+                        e.target.classList.remove('is-invalid');
+                        e.target.classList.add('is-valid');
+                    } else if (e.target.value.trim()) {
+                        e.target.classList.remove('is-valid');
+                        e.target.classList.add('is-invalid');
+                    }
+                }
+            }
+        });
+
+        // Session Management
+        function checkSession() {
+            const sessionExpiry = localStorage.getItem('sessionExpiry');
+            if (sessionExpiry && new Date().getTime() > parseInt(sessionExpiry)) {
+                logout();
+                showToast('Your session has expired. Please login again.', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function extendSession() {
+            if (currentUser) {
+                // Extend session by 24 hours
+                const expiry = new Date().getTime() + (24 * 60 * 60 * 1000);
+                localStorage.setItem('sessionExpiry', expiry.toString());
+            }
+        }
+
+        // Check session on page load and extend on activity
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentUser) {
+                checkSession();
+                extendSession();
+            }
+        });
+
+        // Extend session on user activity
+        ['click', 'scroll', 'keypress'].forEach(event => {
+            document.addEventListener(event, function() {
+                if (currentUser) {
+                    extendSession();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

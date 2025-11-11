@@ -1,0 +1,24 @@
+{
+  "name": "mobile-ecommerce-app",
+  "version": "1.0.0",
+  "description": "A comprehensive mobile ecommerce web application built with Bootstrap",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server . -p 3000",
+    "deploy": "echo 'Ready for deployment!'"
+  },
+  "keywords": [
+    "ecommerce",
+    "mobile",
+    "bootstrap",
+    "shopping",
+    "cart",
+    "prototype"
+  ],
+  "author": "Kamaraj",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
