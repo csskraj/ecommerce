@@ -184,7 +184,7 @@
         </div>
 
         <!-- Login Screen -->
-        <div id="loginScreen" class="screen active">
+        <div id="loginScreen" class="screen">
             <div class="text-center mb-4">
                 <i class="bi bi-shop fs-1 text-primary"></i>
                 <h3 class="mt-3">Welcome Back!</h3>
@@ -295,7 +295,7 @@
         </div>
 
         <!-- Home Screen -->
-        <div id="homeScreen" class="screen">
+        <div id="homeScreen" class="screen active">
             <!-- Search Bar -->
             <div class="mb-3">
                 <div class="input-group">
@@ -605,12 +605,14 @@
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
+            // Always start with home screen (skip authentication)
+            showScreen('home');
+            
+            // Update user info if user is logged in
             if (currentUser) {
-                showScreen('home');
                 updateUserInfo();
-            } else {
-                showScreen('login');
             }
+            
             updateCartBadge();
             loadProducts();
             loadOrders();

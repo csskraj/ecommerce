@@ -196,8 +196,9 @@ const MainTabs = () => (
 
 // Root Navigator
 const RootNavigator = () => {
-  // You can add authentication logic here
-  const isAuthenticated = false; // This should come from Redux state
+  // Skip authentication - always go to main app
+  // Authentication screens are still available via Profile tab
+  const isAuthenticated = true; // Always authenticated (skip login screen)
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
