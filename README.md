@@ -1,6 +1,6 @@
 # 🛍️ Ecommerce Mobile App Demo
 
-**Live Demo:** [Your deployed URL will go here]
+**Live Demo:** [GitHub Pages deployment coming soon!]
 
 ## 📱 **Mobile-First Ecommerce Application**
 
@@ -97,8 +97,8 @@ A complete, responsive ecommerce application built with Bootstrap 5, featuring a
 ### 📞 **Contact**
 
 For questions or customizations, please contact:
-- **Email:** your-email@example.com
-- **GitHub:** your-github-username
+- **Email:** css.kraj@gmail.com
+- **GitHub:** csskraj
 
 ---
 
